@@ -5,7 +5,7 @@ from random import sample
 import numpy as np
 import pandas as pd
 
-BASE_PATH = os.environ['HEARTHSTONE_BASE']
+from hearth.backend.config import TRAINING_GAMES, TRAINING_DECKS, BASE_PATH
 
 
 def build_association_table(df):
@@ -27,7 +27,7 @@ def load_and_split(training_decks=None, test_decks=None, split_ratio=.7):
     :param float split_ratio:
     :return df of matches, training idx, test idx:
     """
-    decks = open(pj(BASE_PATH, 'trainingDecks.json'), 'r').read().split('\n')
+    decks = open(pj(BASE_PATH, "trainingDecks.json"), 'r').read().split('\n')
     decks = list(map(eval, decks[:-1]))
     decks = {x['deckName'][0]: x for x in decks}
 
@@ -44,11 +44,11 @@ def load_and_split(training_decks=None, test_decks=None, split_ratio=.7):
                          "let me build them on my own, without passing "
                          "training_decks and test_decks arguments")
 
-    df = pd.read_csv(pj(BASE_PATH, 'training_games.csv'), sep=';', header=None)
-    train_idx = df[1].isin(training_decks) | df[3].isin(training_decks)
-    test_idx = df[1].isin(test_decks) | df[3].isin(test_decks)
+    df = pd.read_csv(TRAINING_GAMES, sep=";", header=None)
+    train_idx_series = df[2].isin(training_decks) | df[4].isin(training_decks)
+    test_idx_series = df[2].isin(test_decks) | df[4].isin(test_decks)
 
-    train_idx = np.where(train_idx & ~test_idx)
-    test_idx = np.where(test_idx & ~train_idx)
+    train_idx = np.where(train_idx_series & ~test_idx_series)
+    test_idx = np.where(test_idx_series & ~train_idx_series)
 
     return df, train_idx, test_idx
