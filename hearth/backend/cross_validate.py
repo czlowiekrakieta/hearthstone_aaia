@@ -51,4 +51,6 @@ def load_and_split(training_decks=None, test_decks=None, split_ratio=.7):
     train_idx = np.where(train_idx_series & ~test_idx_series)
     test_idx = np.where(test_idx_series & ~train_idx_series)
 
+    print('BUILDING SPLIT DATASET COMPLETED')
+
     return df, train_idx, test_idx

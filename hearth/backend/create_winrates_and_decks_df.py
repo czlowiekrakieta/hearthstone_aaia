@@ -1,12 +1,11 @@
 import os
 from os.path import join as pj
 from functools import reduce
+from hearth.backend.config import BASE_PATH
 
 import pandas as pd
 import numpy as np
 
-
-BASE_PATH = os.environ['HEARTHSTONE_BASE']
 
 df = pd.read_csv(pj(BASE_PATH, 'training_games.csv'), sep=';', header=None)
 
