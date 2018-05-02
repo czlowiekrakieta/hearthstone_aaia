@@ -1,11 +1,10 @@
 from hearth.backend.cross_validate import load_and_split
 from hearth.backend.utils import build_full_cards_and_heroes_list, vectorize_deck, get_card_idx_map
-from hearth.backend.config import TRAINING_DECKS, TRAINING_GAMES, DECKS_JSON
+from hearth.backend.config import TRAINING_GAMES, DECKS_JSON
 
 import numpy as np
 import pandas as pd
 import json
-from random import sample
 
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
@@ -40,10 +39,11 @@ def main():
                                                                      args=(card_map, hero_map),
                                                                      one_hot=False)
     battles_df['bot_with_deck_p2'] = battles_df[3] + '_' + battles_df[4]
+    print("player one vectorized")
     p2_arr = battles_df['bot_with_deck_p2'].apply(include_bot).apply(vectorize_deck,
                                                                      args=(card_map, hero_map),
                                                                      one_hot=False)
-
+    print("player two vectorized")
     p1_arr, p2_arr, y = np.array(p1_arr.tolist()), np.array(p2_arr.tolist()), battles_df[5]
 
     y = (y == 'PLAYER_1 WON').astype(int)
@@ -53,6 +53,7 @@ def main():
     ys = []
 
     for n in range(N_SPLITS):
+        print(n)
         train, test = load_and_split()[1:]
         p1_train = p1_arr[train]
         p2_train = p2_arr[train]
@@ -86,3 +87,7 @@ def main():
 #         offset += fold_size
 
 #         df, train, test = load_and_split()
+
+
+if __name__ == '__main__':
+    probas, ys = main()
